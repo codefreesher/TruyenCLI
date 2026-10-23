@@ -1,0 +1,25 @@
+__pycache__/
+*.py[cod]
+.venv/
+
+# Du lieu crawl/tai ve va cau hinh phat sinh tren may nguoi dung
+data/
+*.enc
+*.enc.tmp
+
+# Thong tin xac thuc/OAuth khong duoc dua len Git
+Config/*.json
+client_secret*.json
+credentials*.json
+token*.json
+
+# San pham build va metadata cua cong cu dong goi
+build/
+dist/
+*.spec
+
+# Cache/metadata cua IDE va he dieu hanh
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db

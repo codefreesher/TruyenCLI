@@ -1,0 +1,53 @@
+name: Build Windows EXE
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: |
+            requirements.txt
+            requirements-build.txt
+
+      - name: Install dependencies
+        run: python -m pip install --upgrade pip && python -m pip install -r requirements-build.txt
+
+      - name: Build executable
+        run: >-
+          python -m PyInstaller
+          --noconfirm
+          --clean
+          --onefile
+          --name TruyenCLI
+          --collect-all googleapiclient
+          --collect-all google_auth_oauthlib
+          --collect-all google.oauth2
+          main.py
+
+      - name: Smoke test
+        run: .\dist\TruyenCLI.exe sources
+
+      - name: Upload executable
+        uses: actions/upload-artifact@v4
+        with:
+          name: TruyenCLI-windows
+          path: dist/TruyenCLI.exe
+          if-no-files-found: error
+          retention-days: 30
