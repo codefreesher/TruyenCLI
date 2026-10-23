@@ -50,6 +50,7 @@ python main.py sources
 ```bash
 python main.py search truyenfull "Đấu phá thương khung"
 python main.py search khosach "Đắc nhân tâm"
+python main.py search meocammap "Tạm biệt bầu trời của anh"
 ```
 
 ## Xem thông tin truyện
@@ -93,6 +94,13 @@ python main.py download khosach 7184 --format pdf
 python main.py download khosach 7184 --format mobi
 python main.py download khosach "https://khosach.mnd.vn/book/7184" --format epub
 python main.py download khosach "Đắc nhân tâm" --format epub
+```
+
+### Mèo Cam Mập
+
+```bash
+python main.py download meocammap "https://meocammap.com/stories/eMDdjtFezi1B3XO3U84f" --format txt
+python main.py download meocammap "https://meocammap.com/stories/eMDdjtFezi1B3XO3U84f" --format txt --from-chapter 1 --limit 10
 ```
 
 ## Crawl theo URL

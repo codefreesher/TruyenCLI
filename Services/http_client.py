@@ -2,9 +2,10 @@ from __future__ import annotations
 
 import json
 import time
+from http.cookiejar import CookieJar
 from typing import Any
 from urllib.error import HTTPError, URLError
-from urllib.request import Request, urlopen
+from urllib.request import HTTPCookieProcessor, Request, build_opener
 from urllib.parse import quote, urlencode, urlsplit, urlunsplit
 
 from Config.settings import Settings
@@ -16,14 +17,15 @@ class HttpClient:
         self.settings = settings
         self.access_token = access_token
         self._last_request = 0.0
+        self._opener = build_opener(HTTPCookieProcessor(CookieJar()))
 
-    def get_text(self, url: str) -> str:
-        body, charset = self._request(url)
+    def get_text(self, url: str, headers: dict[str, str] | None = None) -> str:
+        body, charset = self._request(url, headers=headers)
         return body.decode(charset, errors="replace")
 
-    def get_json(self, url: str) -> Any:
+    def get_json(self, url: str, headers: dict[str, str] | None = None) -> Any:
         try:
-            return json.loads(self.get_text(url))
+            return json.loads(self.get_text(url, headers=headers))
         except json.JSONDecodeError as error:
             raise CrawlerError(f"Dữ liệu JSON không hợp lệ từ {url}") from error
 
@@ -60,7 +62,7 @@ class HttpClient:
             request_headers["Authorization"] = f"Bearer {self.access_token}"
         request = Request(url, data=data, headers=request_headers, method=method)
         try:
-            with urlopen(request, timeout=self.settings.timeout) as response:
+            with self._opener.open(request, timeout=self.settings.timeout) as response:
                 charset = response.headers.get_content_charset() or "utf-8"
                 return response.read(), charset
         except (HTTPError, URLError, TimeoutError) as error:
