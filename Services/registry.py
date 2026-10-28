@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from Config.settings import Settings
 from KhoSach.crawler import KhoSachCrawler
+from LanTruyen.crawler import LanTruyenCrawler
 from MeoCamMap.crawler import MeoCamMapCrawler
 from Services.base_crawler import BaseCrawler
 from Services.errors import SourceNotFoundError
@@ -33,6 +34,7 @@ class CrawlerRegistry:
 def build_registry(settings: Settings) -> CrawlerRegistry:
     registry = CrawlerRegistry()
     registry.register(KhoSachCrawler(settings))
+    registry.register(LanTruyenCrawler(settings))
     registry.register(MeoCamMapCrawler(settings))
     registry.register(TruyenFullCrawler(settings))
     return registry

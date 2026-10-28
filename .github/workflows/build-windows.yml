@@ -45,6 +45,7 @@ jobs:
           --collect-all googleapiclient
           --collect-all google_auth_oauthlib
           --collect-all google.oauth2
+          --collect-all browser_cookie3
           main.py
 
       - name: Smoke test

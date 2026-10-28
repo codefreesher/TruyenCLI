@@ -51,12 +51,16 @@ python main.py sources
 python main.py search truyenfull "Đấu phá thương khung"
 python main.py search khosach "Đắc nhân tâm"
 python main.py search meocammap "Tạm biệt bầu trời của anh"
+python main.py search lantruyen "Chìm Trong Biển Lửa"
 ```
 
 ## Xem thông tin truyện
 
 ```bash
 python main.py detail truyenfull "https://truyenfull.live/ten-truyen/"
+python main.py detail lantruyen "https://lantruyen.vn/chim-trong-bien-lua.html"
+
+Đăng nhập Làn Truyện: vào `Cấu hình` → tài khoản nguồn → `Làn Truyện` → `Mở Chrome có sẵn để đăng nhập`. Phiên được lưu mã hóa và tự dùng lại ở lần chạy sau.
 ```
 
 ## Quét catalog
@@ -122,6 +126,7 @@ python -m PyInstaller --noconfirm --clean --onefile `
   --collect-all googleapiclient `
   --collect-all google_auth_oauthlib `
   --collect-all google.oauth2 `
+  --collect-all browser_cookie3 `
   main.py
 ```
 

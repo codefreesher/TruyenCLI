@@ -552,7 +552,16 @@ class TuiApp:
             status = crawler.account_status()
             username = str(status.get("username") or "")
             state = f"Đã đăng nhập: {username}" if status.get("logged_in") else "Chưa đăng nhập"
-            actions = ["Đăng nhập tài khoản"]
+            auth_hint = (
+                "Mở Chrome đang dùng, đăng nhập Google/Zalo; phiên được nhập và lưu mã hóa."
+                if getattr(crawler, "auth_mode", "") == "session_cookie"
+                else "Mật khẩu chỉ dùng để đăng nhập, không được lưu."
+            )
+            actions = (
+                ["Mở Chrome có sẵn để đăng nhập", "Dán Cookie thủ công"]
+                if getattr(crawler, "auth_mode", "") == "session_cookie"
+                else ["Đăng nhập tài khoản"]
+            )
             if status.get("logged_in"):
                 actions.append("Đăng xuất và xóa token")
             actions.append("Quay lại")
@@ -560,13 +569,43 @@ class TuiApp:
                 f"Cấu hình · {crawler.name}",
                 actions,
                 lambda value: value,
-                details=(state, "Mật khẩu chỉ dùng để đăng nhập, không được lưu."),
+                details=(state, auth_hint),
             )
             if selected == "Quay lại":
                 return
             if selected == "Đăng xuất và xóa token":
                 crawler.logout()
                 self.show_message("Đã đăng xuất", f"Đã xóa token của {crawler.name}.")
+                continue
+            if selected == "Mở Chrome có sẵn để đăng nhập":
+                crawler.open_login_browser()
+                self.show_message(
+                    "Đăng nhập trên Chrome",
+                    "Đăng nhập Google hoặc Zalo, sau đó quay lại đây và nhấn phím bất kỳ.",
+                )
+                self.title = "Đang nhập phiên từ Chrome"
+                self.lines = [crawler.name]
+                self.draw()
+                account = crawler.import_browser_session()
+                self.show_message(
+                    "Đăng nhập thành công",
+                    f"Đã lưu phiên mã hóa: {account.get('username') or 'Làn Truyện'}",
+                )
+                continue
+            if selected == "Dán Cookie thủ công":
+                cookie = self.prompt(
+                    "Cookie phiên Làn Truyện",
+                    "Đăng nhập Google/Zalo trên trình duyệt, rồi dán toàn bộ Cookie request.",
+                    secret=True,
+                )
+                self.title = "Đang kiểm tra phiên đăng nhập"
+                self.lines = [crawler.name]
+                self.draw()
+                account = crawler.login(cookie, "")
+                self.show_message(
+                    "Đăng nhập thành công",
+                    f"Đã lưu phiên mã hóa: {account.get('username') or 'Làn Truyện'}",
+                )
                 continue
             username = self.prompt(
                 "Tên đăng nhập",
