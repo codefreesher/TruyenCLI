@@ -46,6 +46,7 @@ jobs:
           --collect-all google_auth_oauthlib
           --collect-all google.oauth2
           --collect-all browser_cookie3
+          --hidden-import _curses
           main.py
 
       - name: Smoke test

@@ -340,8 +340,22 @@ def run(args: argparse.Namespace) -> int:
 def main() -> int:
     try:
         if len(sys.argv) == 1:
-            if sys.stdin.isatty() and sys.stdout.isatty():
-                from Services.tui import run_tui
+            # curses/windows-curses is unreliable in frozen Windows programs,
+            # especially when the executable is run through Wine.
+            if sys.platform != "win32" and sys.stdin.isatty() and sys.stdout.isatty():
+                try:
+                    from Services.tui import run_tui
+                except ImportError as error:
+                    # ``curses`` is not bundled with CPython on Windows. Keep the
+                    # executable usable if windows-curses/_curses was omitted by
+                    # the build environment, while surfacing unrelated imports.
+                    if getattr(error, "name", None) not in {"curses", "_curses"}:
+                        raise
+                    print(
+                        "Cảnh báo: không tải được giao diện TUI; chuyển sang menu thường.",
+                        file=sys.stderr,
+                    )
+                    return interactive_cli()
 
                 settings = Settings.from_env()
                 return run_tui(settings, build_registry(settings))

@@ -127,6 +127,7 @@ python -m PyInstaller --noconfirm --clean --onefile `
   --collect-all google_auth_oauthlib `
   --collect-all google.oauth2 `
   --collect-all browser_cookie3 `
+  --hidden-import _curses `
   main.py
 ```
 
