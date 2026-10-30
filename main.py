@@ -340,15 +340,15 @@ def run(args: argparse.Namespace) -> int:
 def main() -> int:
     try:
         if len(sys.argv) == 1:
-            # curses/windows-curses is unreliable in frozen Windows programs,
-            # especially when the executable is run through Wine.
-            if sys.platform != "win32" and sys.stdin.isatty() and sys.stdout.isatty():
+            # ``windows-curses`` provides the same TUI API on Windows. Only
+            # fall back to the plain menu when there is no interactive terminal
+            # or curses was not included in a custom build.
+            if sys.stdin.isatty() and sys.stdout.isatty():
                 try:
                     from Services.tui import run_tui
                 except ImportError as error:
-                    # ``curses`` is not bundled with CPython on Windows. Keep the
-                    # executable usable if windows-curses/_curses was omitted by
-                    # the build environment, while surfacing unrelated imports.
+                    # Keep custom/minimal builds usable while surfacing imports
+                    # unrelated to the optional curses implementation.
                     if getattr(error, "name", None) not in {"curses", "_curses"}:
                         raise
                     print(
